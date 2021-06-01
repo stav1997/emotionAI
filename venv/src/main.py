@@ -1,16 +1,24 @@
-# This is a sample Python script.
+import os
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+import matplotlib.pyplot as plt
+import numpy as np
+# from lbp_mtcnn import lbpMtcnn
+# from lbp_haar import lbpHaar
+# from svm_mtcnn import svmMtcnn
+from svm_hog import svmHog
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    path = "C:\\Users\\stav\\Desktop\\final\\venv\\src\\samples\\train\\sad\\215_.jpg"
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    # path = "C:\\Users\\stav\\Desktop\\final year project\\faces\\s.jpg"
+
+    # path = "C:\\Users\\stav\\PycharmProjects\\finalProject\\venv\\src\\samples\\validation\\shock\\download (5).jpg"
+    # lbp = lbpMtcnn(path)
+    # lbp = lbpHaar(path)
+    # lbp = svmMtcnn(path)
+    lbp = svmHog(path)
+
+    plt.imshow(np.flipud(lbp), origin='lower')
+
+    plt.show()
