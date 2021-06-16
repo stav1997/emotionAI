@@ -19,9 +19,10 @@ from pandas import DataFrame
 
 detector = MTCNN()
 accuracy = {}
-with open("C:\\Users\\stav\\Desktop\\emotionAI\\venv\\src\\disgust_model_data_hog.pickle", 'rb') as f:
+with open("C:\\Users\\stav\\Desktop\\emotionAI\\venv\\src\\disgust_model.sav", 'rb') as f:
     model = pickle.load(f)
-
+    f.close()
+    
 def svmHog(path):
     pil_image = cv2.imread(path)
 
@@ -48,3 +49,5 @@ def svmHog(path):
 
     except Exception as e:
         pass
+
+    return image_array
