@@ -11,6 +11,8 @@ import random
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC  # support vector classifier
+from sklearn.calibration import CalibratedClassifierCV
+
 from sklearn.svm import OneClassSVM
 from skimage.feature import hog
 from sklearn import metrics
@@ -84,7 +86,7 @@ for key, value in dir_dict.items():
 
     print("starting %s model training using data file: %s" % (key, value))
 
-    model_name = SVC(C=10, kernel='linear', degree=4, gamma=0.00001, class_weight='balanced')
+    model_name = SVC(C=10, kernel='linear', degree=4, gamma=0.00001, class_weight='balanced', probability=True)
 
     false_train_data, false_test_data, false_train_target, false_test_target = train_test_split(false_data, false_labels, train_size=0.17)
     true_train_data, true_test_data, true_train_target, true_test_target = train_test_split(true_data, true_labels, train_size=0.9)
@@ -98,29 +100,50 @@ for key, value in dir_dict.items():
     models.append([key, model_name, train_data, train_target, test_data[:30], test_target[:30]])
 
 for name, model, train_x, train_y, test_x, test_y in models:
-    scores = cross_val_score(model, train_x, train_y, scoring='accuracy', cv=10, n_jobs=-1, error_score='raise')
-    results.append(scores)
-    names.append(name)
-    print('>%s %.3f (%.3f)' % (name, np.mean(scores), np.std(scores)))
+    # scores = cross_val_score(model, train_x, train_y, scoring='accuracy', cv=10, n_jobs=-1, error_score='raise')
+    # results.append(scores)
+    # names.append(name)
+    # print('CV results: %s %.3f (%.3f)' % (name, np.mean(scores), np.std(scores)))
 
+    model.fit(train_x, train_y)
+    pred = model.predict(train_x)
+    score = metrics.balanced_accuracy_score(train_y, pred)
+    print('FIT results: %s %.3f' % (name, score))
     path_name = os.path.join(models_dir, name+'_SVC_sobel_model.sav')
     with open(path_name, 'wb') as f:
         pickle.dump(model, f)
 
+    # clf = CalibratedClassifierCV(base_estimator=model, cv=5)
+    # clf.fit(train_x, train_y)
+    # pred = clf.predict(train_x)
+    # score = metrics.balanced_accuracy_score(train_y, pred)
+    # print('FIT results: %s %.3f' % (name, score))
+
+    # res = model.decision_function(train_x)
     #
-    # model_name.fit(train_data, train_target)
+    # print(res)
+    # print(train_x[:][0])
+    # print(train_x[:][1])
     #
-    # # prediction = model_name.predict(train_data)
-    # # print("accuracy train: ", metrics.accuracy_score(train_target, prediction))
+    # print(train_y)
+    # plt.scatter(res, train_y, c=train_y, s=30, cmap=plt.cm.Paired)
     #
+    # # plot the decision function
+    # ax = plt.gca()
+    # xlim = ax.get_xlim()
+    # ylim = ax.get_ylim()
     #
+    # # create grid to evaluate model
+    # xx = np.linspace(xlim[0], xlim[1], 30)
+    # yy = np.linspace(ylim[0], ylim[1], 30)
+    # YY, XX = np.meshgrid(yy, xx)
+    # xy = np.vstack([XX.ravel(), YY.ravel()]).T
+    # Z = model.decision_function(xy).reshape(XX.shape)
     #
-    # prediction1 = model_name.predict(test_data[:30])
-    # print("accuracy test: ", metrics.accuracy_score(test_target[:30], prediction1))
+    # # plot decision boundary and margins
+    # ax.contour(XX, YY, Z, colors='k', levels=[-1, 0, 1], alpha=0.5, linestyles=['--', '-', '--'])
     #
-    # scores = cross_val_score(model_name, train_data, train_target, cv=10, scoring="accuracy")
-    # print("%0.2f accuracy with a standard deviation of %0.2f" % (scores.mean(), scores.std()))
-    # print("\n")
+    # # plot support vectors
+    # ax.scatter(model.support_vectors_[:, 0], model.support_vectors_[:, 1], s=100, linewidth=1, facecolors='none', edgecolors='k')
     #
-    # # with open(key+'_model.sav', 'wb') as f:
-    # #     pickle.dump(model_name, f)
+    # plt.show()

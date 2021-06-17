@@ -79,7 +79,7 @@ for key, value in dir_dict.items():
 
     model_name = OneClassSVM(kernel='linear', gamma=0.0005, nu=0.05)
 
-    false_train_data, false_test_data, false_train_target, false_test_target = train_test_split(false_data, false_labels, train_size=0.17)
+    false_train_data, false_test_data, false_train_target, false_test_target = train_test_split(false_data, false_labels, train_size=0.02)
     true_train_data, true_test_data, true_train_target, true_test_target = train_test_split(true_data, true_labels, train_size=0.9)
 
     train_data = true_train_data + false_train_data
@@ -94,7 +94,12 @@ for name, model, train_x, train_y, test_x, test_y in models:
     scores = cross_val_score(model, train_x, train_y, scoring='accuracy', cv=10, n_jobs=-1, error_score='raise')
     results.append(scores)
     names.append(name)
-    print('>%s %.3f (%.3f)' % (name, np.mean(scores), np.std(scores)))
+
+    print('CV results: %s %.3f (%.3f)' % (name, np.mean(scores), np.std(scores)))
+    model.fit(train_x, train_y)
+    pred = model.predict(train_x)
+    score = metrics.balanced_accuracy_score(train_y, pred)
+    print('FIT results: %s %.3f' % (name, score))
 
     path_name = os.path.join(models_dir, name+'_OCS_hog_model.sav')
     with open(path_name, 'wb') as f:

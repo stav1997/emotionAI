@@ -44,7 +44,7 @@ pickle_info.close()
 
 for roi, label in key_data:
     dst = cv2.GaussianBlur(roi, (5, 5), cv2.BORDER_DEFAULT)
-    fd, hog_image = hog(roi, orientations=9, pixels_per_cell=(4, 4), cells_per_block=(4, 4), visualize=True)
+    fd, hog_image = hog(dst, orientations=9, pixels_per_cell=(4, 4), cells_per_block=(4, 4), visualize=True)
     roi = hog_image.flatten()
     data.append([roi, label])
 
@@ -77,7 +77,7 @@ for key, value in dir_dict.items():
 
     print("starting %s model training using data file: %s" % (key, value))
 
-    model_name = SVC(C=10, kernel='linear', degree=4, gamma=0.00001, class_weight='balanced')
+    model_name = SVC(C=10, kernel='linear', degree=4, gamma=0.00001, class_weight='balanced', probability=True)
 
     false_train_data, false_test_data, false_train_target, false_test_target = train_test_split(false_data, false_labels, train_size=0.17)
     true_train_data, true_test_data, true_train_target, true_test_target = train_test_split(true_data, true_labels, train_size=0.9)
@@ -91,10 +91,15 @@ for key, value in dir_dict.items():
     models.append([key, model_name, train_data, train_target, test_data[:30], test_target[:30]])
 
 for name, model, train_x, train_y, test_x, test_y in models:
-    scores = cross_val_score(model, train_x, train_y, scoring='accuracy', cv=10, n_jobs=-1, error_score='raise')
-    results.append(scores)
-    names.append(name)
-    print('>%s %.3f (%.3f)' % (name, np.mean(scores), np.std(scores)))
+    # scores = cross_val_score(model, train_x, train_y, scoring='accuracy', cv=10, n_jobs=-1, error_score='raise')
+    # results.append(scores)
+    # names.append(name)
+    # print('CV results: %s %.3f (%.3f)' % (name, np.mean(scores), np.std(scores)))
+
+    model.fit(train_x, train_y)
+    pred = model.predict(train_x)
+    score = metrics.balanced_accuracy_score(train_y, pred)
+    print('FIT results: %s %.3f' % (name, score))
 
     path_name = os.path.join(models_dir, name+'_SVC_hog_model.sav')
     with open(path_name, 'wb') as f:
