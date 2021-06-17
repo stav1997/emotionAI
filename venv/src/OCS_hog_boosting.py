@@ -38,28 +38,21 @@ dir_dict = {'angry': 0, 'disgust': 1, 'happy': 2, 'natural': 3, 'sad': 4, 'shock
 models_dict = {'angry': 0, 'disgust': 1, 'happy': 2, 'natural': 3, 'sad': 4, 'shock': 5}
 
 # pics_data = os.path.join(pickles_dir, 'pics.pickle')
-#
 # pickle_info = open(pics_data, 'rb')
 # key_data = pickle.load(pickle_info)
 # pickle_info.close()
 #
 # for roi, label in key_data:
 #     dst = cv2.GaussianBlur(roi, (5, 5), cv2.BORDER_DEFAULT)
-#
-#     grad_x = cv2.Sobel(dst, cv2.CV_16S, 1, 0, ksize=1, scale=1, delta=0, borderType=cv2.BORDER_DEFAULT)
-#     grad_y = cv2.Sobel(dst, cv2.CV_16S, 0, 1, ksize=1, scale=1, delta=0, borderType=cv2.BORDER_DEFAULT)
-#     abs_gard_x = cv2.convertScaleAbs(grad_x)
-#     abs_gard_y = cv2.convertScaleAbs(grad_y)
-#     grad = cv2.addWeighted(abs_gard_x, 0.5, abs_gard_y, 0.5, 0)
-#
-#     roi = grad.flatten()
+#     fd, hog_image = hog(roi, orientations=9, pixels_per_cell=(4, 4), cells_per_block=(4, 4), visualize=True)
+#     roi = hog_image.flatten()
 #     data.append([roi, label])
-data_path = os.path.join(pickles_dir, 'pic_sobel_data_.pickle')
-
+#
+data_path = os.path.join(pickles_dir, 'pic_hog_data_.pickle')
+#
 # with open(data_path, 'wb') as f:
 #     pickle.dump(data, f)
 
-# pickle_in = open('pic_sobel_data_.pickle', 'rb')
 pickle_in = open(data_path, 'rb')
 data = pickle.load(pickle_in)
 pickle_in.close()
@@ -84,7 +77,7 @@ for key, value in dir_dict.items():
 
     print("starting %s model training using data file: %s" % (key, value))
 
-    model_name = SVC(C=10, kernel='linear', degree=4, gamma=0.00001, class_weight='balanced')
+    model_name = OneClassSVM(kernel='linear', gamma=0.0005, nu=0.05)
 
     false_train_data, false_test_data, false_train_target, false_test_target = train_test_split(false_data, false_labels, train_size=0.17)
     true_train_data, true_test_data, true_train_target, true_test_target = train_test_split(true_data, true_labels, train_size=0.9)
@@ -103,7 +96,7 @@ for name, model, train_x, train_y, test_x, test_y in models:
     names.append(name)
     print('>%s %.3f (%.3f)' % (name, np.mean(scores), np.std(scores)))
 
-    path_name = os.path.join(models_dir, name+'_SVC_sobel_model.sav')
+    path_name = os.path.join(models_dir, name+'_OCS_hog_model.sav')
     with open(path_name, 'wb') as f:
         pickle.dump(model, f)
 

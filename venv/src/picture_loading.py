@@ -49,6 +49,6 @@ for root, dirs, files in os.walk(image_dir):
                 pass
 
 
-with open('pic_shock_data.pickle', 'wb') as f:
-    pickle.dump(data, f)
+# with open('pic_shock_data.pickle', 'wb') as f:
+#     pickle.dump(data, f)
 

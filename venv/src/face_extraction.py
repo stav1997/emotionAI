@@ -11,7 +11,8 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 image_dir = os.path.join(BASE_DIR, "samples\\train")
 new_image_dir = os.path.join(BASE_DIR, "samples\\updated_images")
 roi_image_dir = os.path.join(BASE_DIR, "samples\\faces")
-print(BASE_DIR)
+# print(BASE_DIR)
+pickles_dir = os.path.join(BASE_DIR, "pickles")
 
 data = []
 current_id = 0
@@ -20,8 +21,6 @@ label_id = {}
 categories = []
 
 
-base_dir = os.path.dirname(__file__)
-print(base_dir)
 prototxt_path = os.path.join(BASE_DIR, 'model_data\\deploy.prototxt')
 caffemodel_path = os.path.join(BASE_DIR, 'model_data\\weights.caffemodel')
 model = cv2.dnn.readNetFromCaffe(prototxt_path, caffemodel_path)
@@ -29,7 +28,7 @@ data = []
 for root, dirs, files in os.walk(image_dir):
 
     for filename in files:
-        boxes ={}
+        boxes = {}
         if filename.endswith("png") or filename.endswith("jpg"):
 
             path = os.path.join(root, filename)
@@ -84,6 +83,8 @@ for root, dirs, files in os.walk(image_dir):
                 pass
 
 
-
-with open('pics.pickle', 'wb') as f:
+path_name = os.path.join(pickles_dir, 'pics.pickle')
+with open(path_name, 'wb') as f:
     pickle.dump(data, f)
+# with open('pics.pickle', 'wb') as f:
+#     pickle.dump(data, f)

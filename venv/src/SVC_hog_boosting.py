@@ -37,32 +37,25 @@ filenames = []
 dir_dict = {'angry': 0, 'disgust': 1, 'happy': 2, 'natural': 3, 'sad': 4, 'shock': 5}
 models_dict = {'angry': 0, 'disgust': 1, 'happy': 2, 'natural': 3, 'sad': 4, 'shock': 5}
 
-# pics_data = os.path.join(pickles_dir, 'pics.pickle')
-#
-# pickle_info = open(pics_data, 'rb')
-# key_data = pickle.load(pickle_info)
-# pickle_info.close()
-#
-# for roi, label in key_data:
-#     dst = cv2.GaussianBlur(roi, (5, 5), cv2.BORDER_DEFAULT)
-#
-#     grad_x = cv2.Sobel(dst, cv2.CV_16S, 1, 0, ksize=1, scale=1, delta=0, borderType=cv2.BORDER_DEFAULT)
-#     grad_y = cv2.Sobel(dst, cv2.CV_16S, 0, 1, ksize=1, scale=1, delta=0, borderType=cv2.BORDER_DEFAULT)
-#     abs_gard_x = cv2.convertScaleAbs(grad_x)
-#     abs_gard_y = cv2.convertScaleAbs(grad_y)
-#     grad = cv2.addWeighted(abs_gard_x, 0.5, abs_gard_y, 0.5, 0)
-#
-#     roi = grad.flatten()
-#     data.append([roi, label])
-data_path = os.path.join(pickles_dir, 'pic_sobel_data_.pickle')
+pics_data = os.path.join(pickles_dir, 'pics.pickle')
+pickle_info = open(pics_data, 'rb')
+key_data = pickle.load(pickle_info)
+pickle_info.close()
 
-# with open(data_path, 'wb') as f:
-#     pickle.dump(data, f)
+for roi, label in key_data:
+    dst = cv2.GaussianBlur(roi, (5, 5), cv2.BORDER_DEFAULT)
+    fd, hog_image = hog(roi, orientations=9, pixels_per_cell=(4, 4), cells_per_block=(4, 4), visualize=True)
+    roi = hog_image.flatten()
+    data.append([roi, label])
 
-# pickle_in = open('pic_sobel_data_.pickle', 'rb')
-pickle_in = open(data_path, 'rb')
-data = pickle.load(pickle_in)
-pickle_in.close()
+data_path = os.path.join(pickles_dir, 'pic_hog_data_.pickle')
+
+with open(data_path, 'wb') as f:
+    pickle.dump(data, f)
+
+# pickle_in = open(data_path, 'rb')
+# data = pickle.load(pickle_in)
+# pickle_in.close()
 
 
 for key, value in dir_dict.items():
@@ -103,7 +96,7 @@ for name, model, train_x, train_y, test_x, test_y in models:
     names.append(name)
     print('>%s %.3f (%.3f)' % (name, np.mean(scores), np.std(scores)))
 
-    path_name = os.path.join(models_dir, name+'_SVC_sobel_model.sav')
+    path_name = os.path.join(models_dir, name+'_SVC_hog_model.sav')
     with open(path_name, 'wb') as f:
         pickle.dump(model, f)
 

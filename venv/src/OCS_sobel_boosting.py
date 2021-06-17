@@ -84,7 +84,7 @@ for key, value in dir_dict.items():
 
     print("starting %s model training using data file: %s" % (key, value))
 
-    model_name = SVC(C=10, kernel='linear', degree=4, gamma=0.00001, class_weight='balanced')
+    model_name = OneClassSVM(kernel='linear', gamma=0.0005, nu=0.05)
 
     false_train_data, false_test_data, false_train_target, false_test_target = train_test_split(false_data, false_labels, train_size=0.17)
     true_train_data, true_test_data, true_train_target, true_test_target = train_test_split(true_data, true_labels, train_size=0.9)
@@ -103,7 +103,7 @@ for name, model, train_x, train_y, test_x, test_y in models:
     names.append(name)
     print('>%s %.3f (%.3f)' % (name, np.mean(scores), np.std(scores)))
 
-    path_name = os.path.join(models_dir, name+'_SVC_sobel_model.sav')
+    path_name = os.path.join(models_dir, name+'_OCS_sobel_model.sav')
     with open(path_name, 'wb') as f:
         pickle.dump(model, f)
 
