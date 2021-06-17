@@ -27,7 +27,7 @@ features = []
 labels = []
 filenames = []
 path1 = "C:\\Users\\stav\\Desktop\\test.jpg"
-dir_dict = {'angry':0, 'disgust':1, 'happy':2, 'natural':3, 'sad':4, 'shock':5}
+dir_dict = {'angry': 0, 'disgust': 1, 'happy': 2, 'natural': 3, 'sad': 4, 'shock': 5}
 
 pickle_info = open('pics.pickle', 'rb')
 key_data = pickle.load(pickle_info)
@@ -45,10 +45,10 @@ for roi, label in key_data:
     roi = grad.flatten()
     data.append([roi, label])
 
-with open('pic_sobel_data.pickle', 'wb') as f:
+with open('pic_sobel_data_.pickle', 'wb') as f:
     pickle.dump(data, f)
 
-# pickle_in = open('model_sobel.pickle', 'rb')
+# pickle_in = open('pic_sobel_data_.pickle', 'rb')
 # data = pickle.load(pickle_in)
 # pickle_in.close()
 
@@ -91,37 +91,9 @@ for key, value in dir_dict.items():
     prediction1 = model_name.predict(test_data[:30])
     print("accuracy test: ", metrics.accuracy_score(test_target[:30], prediction1))
 
-    #
-    # anom_index = [train_data[i] for i, word in enumerate(prediction) if word==-1]
-    # values = anom_index
-    # plt.suptitle(key)
-    # plt.figure(1)
-    # plt.subplot(121)
-    # plt.title("without threshold")
-    #
-    #
-    # plt.scatter(train_data[:][0], train_data[:][1])
-    # plt.scatter(values[:][0], values[:][1], color='r')
-
-    # scores = model_name.score_samples(train_data)
-    # df = DataFrame(scores)
-    # threshold = df.quantile(.03)
-    # thresh = threshold.values[0]
-    # anom_index = [train_data[i] for i, score in enumerate(scores) if score<=thresh]
-    # plt.subplot(122)
-    # plt.title("with threshold")
-    #
-    #
-    # plt.scatter(train_data[:][0], train_data[:][1])
-    # plt.scatter(anom_index[:][0], anom_index[:][1], color='r')
-    # # plt.show()
-
     scores = cross_val_score(model_name, train_data, train_target, cv=10, scoring="accuracy")
     print("%0.2f accuracy with a standard deviation of %0.2f" % (scores.mean(), scores.std()))
     print("\n")
 
-    # # with open(key+'_model_sobel.pickle', 'wb') as f:
-    # #     pickle.dump(data, f)
-    #
     # with open(key+'_model.sav', 'wb') as f:
     #     pickle.dump(model_name, f)

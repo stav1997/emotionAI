@@ -10,7 +10,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 image_dir = os.path.join(BASE_DIR, "samples\\train")
 data = []
 current_id = 0
-file_id = 1000
+file_id = 100
 label_id = {}
 categories = []
 for root, dirs, files in os.walk(image_dir):

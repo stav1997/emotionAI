@@ -48,20 +48,20 @@ for root, dirs, files in os.walk(image_dir):
 
                 model.setInput(blob)
                 detections = model.forward()
-                print("starting image " + filename)
+                # print("starting image " + filename)
                 for i in range(0, detections.shape[2]):
                     box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
                     (startX, startY, endX, endY) = box.astype("int")
                     confidence = detections[0, 0, i, 2]
 
-                    if (confidence > 0.9):
-                        boxes[startX]= box
+                    if confidence > 0.9:
+                        boxes[startX] = box
                     else:
                         break
                 try:
                     min_key = min(boxes, key=float)
-                    print(boxes)
-                    print("min key is: ",min_key)
+                    # print(boxes)
+                    # print("min key is: ",min_key)
                     chosen_box = boxes[min_key]
                     (startX, startY, endX, endY) = chosen_box.astype("int")
                     frame = pil_image[startY:endY, startX:endX]
@@ -75,13 +75,14 @@ for root, dirs, files in os.walk(image_dir):
                     pic = cv2.resize(pic_, (304, 304))
                     data.append([pic, label])
                 except Exception as e:
-                    pass
-
-                print("Image " + filename + " converted successfully")
-                print("Image " + filename + " ROI successfully")
+                    print("!!!!!!!!!!!!IMAGE " + filename + " HASN'T BEEN SAVED!!!!!!!!!!!!")
+                #
+                # print("Image " + filename + " converted successfully")
+                # print("Image " + filename + " ROI successfully")
 
             except Exception as e:
                 pass
+
 
 
 with open('pics.pickle', 'wb') as f:

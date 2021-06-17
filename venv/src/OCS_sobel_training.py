@@ -27,7 +27,7 @@ features = []
 labels = []
 filenames = []
 path1 = "C:\\Users\\stav\\Desktop\\test.jpg"
-dir_dict = {'angry':0, 'disgust':1, 'happy':2, 'natural':3, 'sad':4, 'shock':5}
+dir_dict = {'angry': 0, 'disgust': 1, 'happy': 2, 'natural': 3, 'sad': 4, 'shock': 5}
 
 pickle_info = open('pics.pickle', 'rb')
 key_data = pickle.load(pickle_info)
@@ -54,10 +54,10 @@ for roi, label in key_data:
 
     data.append([roi, label])
 
-with open('pic_sobel_data.pickle', 'wb') as f:
+with open('pic_sobel_data_.pickle', 'wb') as f:
     pickle.dump(data, f)
 
-# pickle_in = open('model_sobel.pickle', 'rb')
+# pickle_in = open('pic_sobel_data_.pickle', 'rb')
 # data = pickle.load(pickle_in)
 # pickle_in.close()
 
