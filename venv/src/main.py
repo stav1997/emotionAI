@@ -7,6 +7,7 @@ import numpy as np
 # from lbp_haar import lbpHaar
 # from svm_mtcnn import svmMtcnn
 from scores_and_results import showScoreResults
+from OCS_sobel import ocsHog
 
 from SVC_sobel import svcSobel
 from SVC_hog import svcHog
@@ -22,19 +23,19 @@ if __name__ == '__main__':
     # path = "C:\\Users\\stav\\PycharmProjects\\finalProject\\venv\\src\\samples\\validation\\shock\\download (5).jpg"
 
     #
-    # res_hog = svcHog(path)
-    # plt.suptitle("RESULTS:")
-    # plt.figure(1)
-    # plt.subplot(121)
-    # plt.title("HOG result")
-    # plt.imshow(np.flipud(res_hog[...,::-1]), origin='lower')
-    #
-    # res_sobel = svcSobel(path)
-    # plt.subplot(122)
-    # plt.title("SOBEL result")
-    # plt.imshow(np.flipud(res_sobel[...,::-1]), origin='lower')
-    # plt.show()
-    showScoreResults()
+    res_hog = svcHog(path)
+    plt.suptitle("RESULTS:")
+    plt.figure(1)
+    plt.subplot(121)
+    plt.title("HOG SVC result")
+    plt.imshow(np.flipud(res_hog[...,::-1]), origin='lower')
+
+    res_sobel = ocsHog(path)
+    plt.subplot(122)
+    plt.title("HOG OCS result")
+    plt.imshow(np.flipud(res_sobel[...,::-1]), origin='lower')
+    plt.show()
+    # showScoreResults()
     # print(res)
     # plt.imshow(np.flipud(res), origin='lower')
     #
