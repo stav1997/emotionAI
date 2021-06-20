@@ -40,16 +40,16 @@ def showScoreResults():
 
     for name, score in results_hog:
         names_hog.append(name)
-        scores_hog.append(np.mean(score))
+        scores_hog.append(np.mean(score)*100)
 
     for name, score in results_sobel:
         names_sobel.append(name)
-        scores_sobel.append(np.mean(score))
+        scores_sobel.append(np.mean(score)*100)
 
     rects1 = ax.bar(ind, scores_hog, width, color='blue')
     rects2 = ax.bar(ind + width, scores_sobel, width, color='red')
 
-    ax.set_ylabel('Accurecy precentage')
+    ax.set_ylabel('Accurecy in precentage')
     ax.set_xlabel('Emotions')
 
     ax.set_xticks(ind + width/2)
@@ -59,7 +59,7 @@ def showScoreResults():
     def autolabel(rects):
         for rect in rects:
             h = rect.get_height()
-            ax.text(rect.get_x() + rect.get_width() / 2., 1.0* h, '%.4f' % float(h), ha='center', va='bottom')
+            ax.text(rect.get_x() + rect.get_width() / 1.9, 1.0* h, '%.2f' % float(h)+'%', ha='center', va='bottom')
 
 
     autolabel(rects1)
