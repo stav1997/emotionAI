@@ -23,6 +23,7 @@ results = {}
 boxes = {}
 
 def svcSobel(path_):
+    print('SVC sobel results using decision_function:')
 
     pil_image = cv2.imread(path_)
     # pil_image = plt.imread(path_)
@@ -85,8 +86,11 @@ def svcSobel(path_):
         arg = np.argmin(dist)
         answer = k[arg]
 
-        cv2.putText(pil_image, answer, (startX, startY), cv2.FONT_HERSHEY_SIMPLEX, int(3), (255, 255, 0), int(3), cv2.LINE_AA)
-        # print(answer)
+        scale = 0.5
+        fontScale = min(endX - startX, endY - startY) / (25 / scale)
+        # print(fontScale)
+
+        cv2.putText(pil_image, answer, (startX, startY), cv2.FONT_HERSHEY_SIMPLEX, int(fontScale), (255, 255, 0), int(2), cv2.LINE_AA)
 
         return pil_image
     except Exception as e:

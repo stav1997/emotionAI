@@ -20,6 +20,7 @@ from pca import pca
 from sklearn.feature_selection import SelectFromModel
 from skimage.feature import canny
 from sklearn.ensemble import StackingClassifier
+from pandas import DataFrame
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 pickles_dir = os.path.join(BASE_DIR, "pickles")
@@ -77,14 +78,19 @@ for key, value in dir_dict.items():
 
     print("starting %s model training using data file: %s" % (key, value))
 
-    model_name = OneClassSVM(kernel='linear', gamma=0.0005, nu=0.05)
+    model_name = OneClassSVM(kernel='linear', gamma='scale', nu=0.1)
+    # model_name = OneClassSVM(kernel='rbf', gamma=0.0005, nu=0.05)
 
-    false_train_data, false_test_data, false_train_target, false_test_target = train_test_split(false_data, false_labels, train_size=0.02)
+
+    false_train_data, false_test_data, false_train_target, false_test_target = train_test_split(false_data, false_labels, train_size=0.09)
+    # false_train_data, false_test_data, false_train_target, false_test_target = train_test_split(false_data, false_labels, train_size=0.005)
+
 
     train_data = true_data + false_train_data
     train_target = true_labels + false_train_target
 
-    models.append([key, model_name, train_data, train_target])
+    models.append([key, model_name, true_data, true_labels])
+    # models.append([key, model_name, train_data, train_target])
 
 for name, model, train_x, train_y in models:
     scores = cross_val_score(model, train_x, train_y, scoring='accuracy', cv=10, n_jobs=-1, error_score='raise')
@@ -95,6 +101,7 @@ for name, model, train_x, train_y in models:
     model.fit(train_x, train_y)
     pred = model.predict(train_x)
     score = metrics.balanced_accuracy_score(train_y, pred)
+
     print('FIT results: %s %.3f' % (name, score))
 
     path_name = os.path.join(models_dir, name + '_OCS_hog_model.sav')

@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import cv2  # opencv
 from PIL import Image
-from mtcnn.mtcnn import MTCNN
 import pickle
 import time
 import random
@@ -66,43 +65,46 @@ data = pickle.load(pickle_in)
 pickle_in.close()
 
 
-for key, value in dir_dict.items():
 
+for key, value in dir_dict.items():
+    features = []
+    labels = []
     true_data = []
     true_labels = []
     false_data = []
     false_labels = []
 
     random.shuffle(data)
+
     for feature, label in data:
         if label == key:
-            true_data.append(feature)
-            true_labels.append(1)
+            true_data.append([feature, 1])
         else:
-            false_data.append(feature)
-            false_labels.append(-1)
+            false_data.append([feature, -1])
 
-    print("starting %s model training using data file: %s" % (key, value))
+    print(len(true_data))
+    data_ = true_data + false_data[:70]
+    random.shuffle(data_)
+    for feature, label in data_:
+        features.append(feature)
+        labels.append(label)
 
-    model_name = SVC(C=10, kernel='linear', degree=4, gamma=0.00001, class_weight='balanced', probability=True)
+    model_name = SVC(C=10, kernel='linear', degree=4, gamma='scale', class_weight='balanced', probability=True)
+    models.append([key, model_name, features, labels])
 
-    false_train_data, false_test_data, false_train_target, false_test_target = train_test_split(false_data, false_labels, train_size=0.17)
+for name, model, features_, labels_ in models:
+    print("starting %s model training" % name)
 
-    train_data = true_data + false_train_data
-    train_target = true_labels + false_train_target
-
-    models.append([key, model_name, train_data, train_target])
-
-for name, model, train_x, train_y in models:
-    scores = cross_val_score(model, train_x, train_y, scoring='accuracy', cv=10, n_jobs=-1, error_score='raise')
-    results.append([name, scores])
-
+    scores = cross_val_score(model, features_, labels_, scoring='accuracy', cv=10, n_jobs=-1, error_score='raise')
+    results.append([name,scores])
     print('CV results: %s %.3f (%.3f)' % (name, np.mean(scores), np.std(scores)))
 
-    model.fit(train_x, train_y)
-    pred = model.predict(train_x)
-    score = metrics.balanced_accuracy_score(train_y, pred)
+    train_data, test_data, train_target, test_target = train_test_split(features_, labels_, train_size=0.2)
+    model.fit(train_data, train_target)
+    pred = model.predict(test_data)
+    score = metrics.balanced_accuracy_score(test_target, pred)
     print('FIT results: %s %.3f' % (name, score))
+
 
     path_name = os.path.join(models_dir, name+'_SVC_sobel_model.sav')
     with open(path_name, 'wb') as f:

@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import cv2  # opencv
 from PIL import Image
-from mtcnn.mtcnn import MTCNN
 import pickle
 import time
 import random
@@ -30,8 +29,7 @@ results = []
 names = []
 roi_image_dir = os.path.join(BASE_DIR, "samples\\faces")
 data = []
-features = []
-labels = []
+
 filenames = []
 height = []
 tick_label = []
@@ -60,83 +58,48 @@ pickle_in.close()
 
 
 for key, value in dir_dict.items():
-
+    features = []
+    labels = []
     true_data = []
     true_labels = []
     false_data = []
     false_labels = []
 
     random.shuffle(data)
+
     for feature, label in data:
         if label == key:
-            true_data.append(feature)
-            true_labels.append(1)
+            true_data.append([feature, 1])
         else:
-            false_data.append(feature)
-            false_labels.append(-1)
+            false_data.append([feature, -1])
 
+    print(len(true_data))
+    data_ = true_data + false_data[:70]
+    random.shuffle(data_)
+    for feature, label in data_:
+        features.append(feature)
+        labels.append(label)
 
-    print("starting %s model training using data file: %s" % (key, value))
+    model_name = SVC(C=10, kernel='linear', degree=4, gamma='scale', class_weight='balanced', probability=True)
+    models.append([key, model_name, features, labels])
 
-    model_name = SVC(C=10, kernel='linear', degree=4, gamma=0.00001, class_weight='balanced', probability=True)
+for name, model, features_, labels_ in models:
+    print("starting %s model training" % name)
 
-    false_train_data, false_test_data, false_train_target, false_test_target = train_test_split(false_data, false_labels, train_size=0.17)
-    # true_train_data, true_test_data, true_train_target, true_test_target = train_test_split(true_data, true_labels, train_size=1.0)
-
-    train_data = true_data + false_train_data
-    train_target = true_labels + false_train_target
-
-    # test_data = true_test_data + false_test_data
-    # test_target = true_test_target + false_test_target
-
-    # train_data = true_train_data + false_train_data
-    # train_target = true_train_target + false_train_target
-    #
-    # test_data = true_test_data + false_test_data
-    # test_target = true_test_target + false_test_target
-
-    models.append([key, model_name, train_data, train_target])
-    # models.append([key, model_name, train_data, train_target, test_data[:30], test_target[:30]])
-
-
-for name, model, train_x, train_y in models:
-    scores = cross_val_score(model, train_x, train_y, scoring='accuracy', cv=10, n_jobs=-1, error_score='raise')
+    scores = cross_val_score(model, features_, labels_, scoring='accuracy', cv=10, n_jobs=-1, error_score='raise')
     results.append([name,scores])
-
     print('CV results: %s %.3f (%.3f)' % (name, np.mean(scores), np.std(scores)))
 
-    model.fit(train_x, train_y)
-    pred = model.predict(train_x)
-    score = metrics.balanced_accuracy_score(train_y, pred)
+    train_data, test_data, train_target, test_target = train_test_split(features_, labels_, train_size=0.2)
+    model.fit(train_data, train_target)
+    pred = model.predict(test_data)
+    score = metrics.balanced_accuracy_score(test_target, pred)
     print('FIT results: %s %.3f' % (name, score))
 
-    path_name = os.path.join(models_dir, name+'_SVC_hog_model.sav')
+    path_name = os.path.join(models_dir, name + '_SVC_hog_model.sav')
     with open(path_name, 'wb') as f:
         pickle.dump(model, f)
 
 path_ = os.path.join(pickles_dir, 'SVC_hog_scores.pickle')
 with open(path_, 'wb') as f:
     pickle.dump(results, f)
-
-
-
-
-
-
-    #
-    # model_name.fit(train_data, train_target)
-    #
-    # # prediction = model_name.predict(train_data)
-    # # print("accuracy train: ", metrics.accuracy_score(train_target, prediction))
-    #
-    #
-    #
-    # prediction1 = model_name.predict(test_data[:30])
-    # print("accuracy test: ", metrics.accuracy_score(test_target[:30], prediction1))
-    #
-    # scores = cross_val_score(model_name, train_data, train_target, cv=10, scoring="accuracy")
-    # print("%0.2f accuracy with a standard deviation of %0.2f" % (scores.mean(), scores.std()))
-    # print("\n")
-    #
-    # # with open(key+'_model.sav', 'wb') as f:
-    # #     pickle.dump(model_name, f)

@@ -40,12 +40,12 @@ def svcHog(path_):
         for i in range(0, detections.shape[2]):
 
             box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
-            print(box)
+            # print(box)
             (startX, startY, endX, endY) = box.astype("int")
             # cv2.rectangle(pil_image, (startX, startY), (endX, endY), (255, 255, 255), 2)
 
             confidence = detections[0, 0, i, 2]
-            print(confidence)
+            # print(confidence)
 
             if confidence > 0.9:
                 boxes[startX] = box
@@ -92,8 +92,11 @@ def svcHog(path_):
         dist = abs(v - target_value)
         arg = np.argmin(dist)
         answer = k[arg]
-        cv2.putText(pil_image, answer, (startX, startY), cv2.FONT_HERSHEY_SIMPLEX, int(3), (255, 255, 0), int(3), cv2.LINE_AA)
 
+        scale = 0.5
+        fontScale = min(endX - startX, endY - startY) / (25 / scale)
+        # print(fontScale)
+        cv2.putText(pil_image, answer, (startX, startY), cv2.FONT_HERSHEY_SIMPLEX, int(fontScale), (255, 255, 0), int(2), cv2.LINE_AA)
         return pil_image
 
     except Exception as e:

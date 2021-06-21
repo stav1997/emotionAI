@@ -84,16 +84,18 @@ for key, value in dir_dict.items():
 
     print("starting %s model training using data file: %s" % (key, value))
 
-    model_name = OneClassSVM(kernel='linear', gamma=0.0005, nu=0.05)
+    model_name = OneClassSVM(kernel='linear', gamma='scale', nu=0.1)
+    # model_name = OneClassSVM(kernel='rbf', gamma=0.0005, nu=0.05)
 
-    false_train_data, false_test_data, false_train_target, false_test_target = train_test_split(false_data,
-                                                                                                false_labels,
-                                                                                                train_size=0.02)
+    false_train_data, false_test_data, false_train_target, false_test_target = train_test_split(false_data, false_labels, train_size=0.09)
+    # false_train_data, false_test_data, false_train_target, false_test_target = train_test_split(false_data, false_labels, train_size=0.005)
+
 
     train_data = true_data + false_train_data
     train_target = true_labels + false_train_target
 
-    models.append([key, model_name, train_data, train_target])
+    models.append([key, model_name, true_data, true_labels])
+    # models.append([key, model_name, train_data, train_target])
 
 for name, model, train_x, train_y in models:
     scores = cross_val_score(model, train_x, train_y, scoring='accuracy', cv=10, n_jobs=-1, error_score='raise')

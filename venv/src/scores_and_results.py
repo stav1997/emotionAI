@@ -70,12 +70,12 @@ def showScoreResults():
 
     ax.set_xticks(ind + width/2)
     ax.set_xticklabels(names_sobel)
-    ax.legend((rects1[0], rects2[0], rects3[0], rects4[0]), ('HOG-SVC','HOG-OCS', 'SOBEL-SVC','SOBEL-OCS'))
+    ax.legend((rects1[0], rects2[0], rects3[0], rects4[0]), ('HOG-SVC','HOG-OCS', 'SOBEL-SVC','SOBEL-OCS'), frameon=False, loc='upper left', ncol=2)
 
     def autolabel(rects):
         for rect in rects:
             h = rect.get_height()
-            ax.text(rect.get_x() + rect.get_width() / 1.9, 1.0* h, '%.2f' % float(h)+'%', ha='center', va='bottom')
+            ax.text(rect.get_x() + rect.get_width() / 1.9, 1.0* h, '%.1f' % float(h)+'%', ha='center', va='bottom')
 
 
     autolabel(rects1)
@@ -83,6 +83,6 @@ def showScoreResults():
     autolabel(rects3)
     autolabel(rects4)
 
-    plt.title('10-fold cross-validation')
-    plt.suptitle('SVC with HOG feature extraction', x = mid)
+    plt.title('10-fold cross-validation results')
+    # plt.savefig('last_apdate_21.6.png', bbox_inches='tight')
     plt.show()
