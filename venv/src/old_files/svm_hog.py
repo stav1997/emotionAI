@@ -1,21 +1,11 @@
 import os
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
-import matplotlib.pyplot as plt
 import numpy as np
 import cv2  # opencv
 from PIL import Image
 from mtcnn.mtcnn import MTCNN
 import pickle
-import time
-import random
-from sklearn.model_selection import GridSearchCV
-from sklearn.model_selection import train_test_split
-from sklearn.svm import SVC  # support vector classifier
-from sklearn.svm import OneClassSVM
 from skimage.feature import hog
-from sklearn import metrics
-from sklearn.model_selection import cross_val_score
-from pandas import DataFrame
 
 detector = MTCNN()
 accuracy = {}
