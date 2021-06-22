@@ -2,12 +2,7 @@ import os
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 import matplotlib.pyplot as plt
 import numpy as np
-import cv2  # opencv
-from PIL import Image
 import pickle
-import random
-from sklearn.svm import SVC  # support vector classifier
-from sklearn import metrics
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 pickles_dir = os.path.join(BASE_DIR, "pickles")
@@ -77,12 +72,10 @@ def showScoreResults():
             h = rect.get_height()
             ax.text(rect.get_x() + rect.get_width() / 1.9, 1.0* h, '%.1f' % float(h)+'%', ha='center', va='bottom')
 
-
     autolabel(rects1)
     autolabel(rects2)
     autolabel(rects3)
     autolabel(rects4)
 
     plt.title('10-fold cross-validation results')
-    # plt.savefig('last_apdate_21.6.png', bbox_inches='tight')
     plt.show()

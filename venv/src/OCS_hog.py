@@ -1,12 +1,10 @@
 import os
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
-import matplotlib.pyplot as plt
 import numpy as np
 import cv2 #opencv
 from PIL import Image
 import pickle
 from skimage.feature import hog
-from face_extractor import Extractor
 from pandas import DataFrame
 
 
@@ -27,11 +25,8 @@ boxes = {}
 def ocsHog(path_):
 
     pil_image = cv2.imread(path_)
-    # pil_image = plt.imread(path_)
 
     try:
-        # print(pil_image)
-        # print("here")
         (h, w) = pil_image.shape[:2]
 
         blob = cv2.dnn.blobFromImage(cv2.resize(pil_image, (304, 304)), 1.0, (304, 304), (104.0, 177.0, 123.0))
@@ -42,20 +37,14 @@ def ocsHog(path_):
         for i in range(0, detections.shape[2]):
 
             box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
-            # print(box)
             (startX, startY, endX, endY) = box.astype("int")
-            # cv2.rectangle(pil_image, (startX, startY), (endX, endY), (255, 255, 255), 2)
-            # print("here")
-
             confidence = detections[0, 0, i, 2]
-            # print(confidence)
 
             if confidence > 0.9:
                 boxes[startX] = box
             else:
                 break
         try:
-
 
             min_key = min(boxes, key=float)
             chosen_box = boxes[min_key]
@@ -70,7 +59,6 @@ def ocsHog(path_):
             dst = cv2.GaussianBlur(pic, (5, 5), cv2.BORDER_DEFAULT)
             fd, hog_image = hog(dst, orientations=9, pixels_per_cell=(4, 4), cells_per_block=(4, 4), visualize=True)
             roi = hog_image.flatten()
-            # print(fd.shape)
             roi = roi.reshape(1, -1)
 
             for name, model_ in models_dict.items():
@@ -82,14 +70,10 @@ def ocsHog(path_):
                 res =model1.decision_function(roi)
 
                 scores = model1.score_samples(roi)
-                # print(scores)
-
-                # print(scores)
                 df = DataFrame(scores)
                 threshold = df.quantile(q=0.6)
                 thresh = threshold.values[0]
                 resl = thresh-res[0]
-                # print(">%s --> %0.5f --> %0.5f --> final: %0.5f" % (name, scores[0], thresh, resl))
                 print(">%s --> %0.4f" % (name, res[0]))
                 results[name] = res[0]
 
@@ -107,7 +91,6 @@ def ocsHog(path_):
         answer = k[arg]
         scale = 0.5
         fontScale = min(endX-startX, endY-startY) / (25 / scale)
-        # print(fontScale)
 
         cv2.putText(pil_image, answer, (startX, startY), cv2.FONT_HERSHEY_SIMPLEX, int(fontScale), (255, 255, 0), int(2), cv2.LINE_AA)
 

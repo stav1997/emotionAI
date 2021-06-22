@@ -1,24 +1,12 @@
 import os
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
-import matplotlib.pyplot as plt
 import numpy as np
-import cv2  # opencv
-from PIL import Image
 import pickle
-import time
 import random
-from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC  # support vector classifier
-from sklearn.svm import OneClassSVM
-from skimage.feature import hog
 from sklearn import metrics
 from sklearn.model_selection import cross_val_score
-from pandas import DataFrame
-from pca import pca
-from sklearn.feature_selection import SelectFromModel
-from skimage.feature import canny
-from sklearn.ensemble import StackingClassifier
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 pickles_dir = os.path.join(BASE_DIR, "pickles")
@@ -34,24 +22,8 @@ filenames = []
 height = []
 tick_label = []
 dir_dict = {'angry': 0, 'disgust': 1, 'happy': 2, 'natural': 3, 'sad': 4, 'shock': 5}
-models_dict = {'angry': 0, 'disgust': 1, 'happy': 2, 'natural': 3, 'sad': 4, 'shock': 5}
-#
-# pics_data = os.path.join(pickles_dir, 'pics.pickle')
-# pickle_info = open(pics_data, 'rb')
-# key_data = pickle.load(pickle_info)
-# pickle_info.close()
-#
-# for roi, label in key_data:
-#     dst = cv2.GaussianBlur(roi, (5, 5), cv2.BORDER_DEFAULT)
-#     fd, hog_image = hog(dst, orientations=9, pixels_per_cell=(4, 4), cells_per_block=(4, 4), visualize=True)
-#     roi = hog_image.flatten()
-#     data.append([roi, label])
-#
-data_path = os.path.join(pickles_dir, 'pic_hog_data_.pickle')
-#
-# with open(data_path, 'wb') as f:
-#     pickle.dump(data, f)
 
+data_path = os.path.join(pickles_dir, 'pic_hog_data_.pickle')
 pickle_in = open(data_path, 'rb')
 data = pickle.load(pickle_in)
 pickle_in.close()

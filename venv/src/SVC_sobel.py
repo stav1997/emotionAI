@@ -1,12 +1,9 @@
 import os
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
-import matplotlib.pyplot as plt
 import numpy as np
 import cv2 #opencv
 from PIL import Image
 import pickle
-from sklearn.model_selection import GridSearchCV
-from face_extractor import Extractor
 
 models_dict = {'angry': 'angry_SVC_sobel_model.sav', 'disgust': 'disgust_SVC_sobel_model.sav', 'happy': 'happy_SVC_sobel_model.sav', 'natural': 'natural_SVC_sobel_model.sav', 'sad': 'sad_SVC_sobel_model.sav', 'shock': 'shock_SVC_sobel_model.sav'}
 
@@ -88,39 +85,11 @@ def svcSobel(path_):
 
         scale = 0.5
         fontScale = min(endX - startX, endY - startY) / (25 / scale)
-        # print(fontScale)
-
         cv2.putText(pil_image, answer, (startX, startY), cv2.FONT_HERSHEY_SIMPLEX, int(fontScale), (255, 255, 0), int(2), cv2.LINE_AA)
 
         return pil_image
     except Exception as e:
         print("2")
         print("!!!!!!!!!!!!IMAGE " + path_ + " HASN'T BEEN SAVED!!!!!!!!!!!!")
-        # cv2.putText(pil_image, "couldn't tell", (startX, startY), cv2.FONT_HERSHEY_SIMPLEX, int(3), (0, 0, 0), int(3), cv2.LINE_AA)
-
         return pil_image
 
-
-#
-# def plot_decision_function(est):
-#     xx, yy = np.meshgrid(np.linspace(-3, 3, 500), np.linspace(-3, 3, 500))
-#
-#     # We evaluate the decision function on the grid.
-#     Z = est.decision_function(np.c_[xx.ravel(), yy.ravel()])
-#     Z = Z.reshape(xx.shape)
-#     cmap = plt.cm.Blues
-#     # We display the decision function on the grid.
-#     plt.figure(figsize=(5,5))
-#     plt.imshow(Z, extent=(xx.min(), xx.max(), yy.min(), yy.max()), aspect='auto', origin='lower', cmap=cmap)
-#
-#     # We display the boundary where Z = 0
-#     plt.contour(xx, yy, Z, levels=[0], linewidths=2, colors='k')
-#
-#     # All point colors c fall in the interval .5<=c<=1.0 on the blue colormap. We color the true points darker blue.
-#     plt.scatter(X[:, 0], X[:, 1], s=30, c=.5+.5*y, lw=1, cmap=cmap, vmin=0, vmax=1)
-#
-#     plt.axhline(0, color='k', ls='--')
-#     plt.axvline(0, color='k', ls='--')
-#     plt.xticks(())
-#     plt.yticks(())
-#     plt.axis([-3, 3, -3, 3])

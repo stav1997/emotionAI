@@ -1,25 +1,12 @@
 import os
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
-import matplotlib.pyplot as plt
 import numpy as np
-import cv2  # opencv
-from PIL import Image
 import pickle
-import time
 import random
-from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC  # support vector classifier
-from sklearn.calibration import CalibratedClassifierCV
-from sklearn.svm import OneClassSVM
-from skimage.feature import hog
 from sklearn import metrics
 from sklearn.model_selection import cross_val_score
-from pandas import DataFrame
-from pca import pca
-from sklearn.feature_selection import SelectFromModel
-from skimage.feature import canny
-from sklearn.ensemble import StackingClassifier
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 pickles_dir = os.path.join(BASE_DIR, "pickles")
@@ -35,35 +22,11 @@ features = []
 labels = []
 filenames = []
 dir_dict = {'angry': 0, 'disgust': 1, 'happy': 2, 'natural': 3, 'sad': 4, 'shock': 5}
-models_dict = {'angry': 0, 'disgust': 1, 'happy': 2, 'natural': 3, 'sad': 4, 'shock': 5}
 
-# pics_data = os.path.join(pickles_dir, 'pics.pickle')
-#
-# pickle_info = open(pics_data, 'rb')
-# key_data = pickle.load(pickle_info)
-# pickle_info.close()
-#
-# for roi, label in key_data:
-#     dst = cv2.GaussianBlur(roi, (5, 5), cv2.BORDER_DEFAULT)
-#
-#     grad_x = cv2.Sobel(dst, cv2.CV_16S, 1, 0, ksize=1, scale=1, delta=0, borderType=cv2.BORDER_DEFAULT)
-#     grad_y = cv2.Sobel(dst, cv2.CV_16S, 0, 1, ksize=1, scale=1, delta=0, borderType=cv2.BORDER_DEFAULT)
-#     abs_gard_x = cv2.convertScaleAbs(grad_x)
-#     abs_gard_y = cv2.convertScaleAbs(grad_y)
-#     grad = cv2.addWeighted(abs_gard_x, 0.5, abs_gard_y, 0.5, 0)
-#
-#     roi = grad.flatten()
-#     data.append([roi, label])
 data_path = os.path.join(pickles_dir, 'pic_sobel_data_.pickle')
-
-# with open(data_path, 'wb') as f:
-#     pickle.dump(data, f)
-
-# pickle_in = open('pic_sobel_data_.pickle', 'rb')
 pickle_in = open(data_path, 'rb')
 data = pickle.load(pickle_in)
 pickle_in.close()
-
 
 
 for key, value in dir_dict.items():
@@ -104,7 +67,6 @@ for name, model, features_, labels_ in models:
     pred = model.predict(test_data)
     score = metrics.balanced_accuracy_score(test_target, pred)
     print('FIT results: %s %.3f' % (name, score))
-
 
     path_name = os.path.join(models_dir, name+'_SVC_sobel_model.sav')
     with open(path_name, 'wb') as f:

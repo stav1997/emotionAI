@@ -1,12 +1,10 @@
 import os
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
-import matplotlib.pyplot as plt
 import numpy as np
 import cv2 #opencv
 from PIL import Image
 import pickle
 from skimage.feature import hog
-from face_extractor import Extractor
 
 models_dict = {'angry': 'angry_SVC_hog_model.sav', 'disgust': 'disgust_SVC_hog_model.sav', 'happy': 'happy_SVC_hog_model.sav', 'natural': 'natural_SVC_hog_model.sav', 'sad': 'sad_SVC_hog_model.sav', 'shock': 'shock_SVC_hog_model.sav'}
 
@@ -28,10 +26,8 @@ def svcHog(path_):
     # pil_image = plt.imread(path_)
 
     try:
-        # print(pil_image)
-        # print("here")
-        (h, w) = pil_image.shape[:2]
 
+        (h, w) = pil_image.shape[:2]
         blob = cv2.dnn.blobFromImage(cv2.resize(pil_image, (304, 304)), 1.0, (304, 304), (104.0, 177.0, 123.0))
 
         model.setInput(blob)
@@ -40,12 +36,8 @@ def svcHog(path_):
         for i in range(0, detections.shape[2]):
 
             box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
-            # print(box)
             (startX, startY, endX, endY) = box.astype("int")
-            # cv2.rectangle(pil_image, (startX, startY), (endX, endY), (255, 255, 255), 2)
-
             confidence = detections[0, 0, i, 2]
-            # print(confidence)
 
             if confidence > 0.9:
                 boxes[startX] = box
@@ -53,12 +45,10 @@ def svcHog(path_):
                 break
         try:
 
-
             min_key = min(boxes, key=float)
             chosen_box = boxes[min_key]
             (startX, startY, endX, endY) = chosen_box.astype("int")
             cv2.rectangle(pil_image, (startX, startY), (endX, endY), (255, 255, 255), 2)
-            # print("here")
 
             img = Image.open(path_).convert("L")
             image_array = np.array(img, "uint8")
@@ -68,7 +58,6 @@ def svcHog(path_):
             dst = cv2.GaussianBlur(pic, (5, 5), cv2.BORDER_DEFAULT)
             fd, hog_image = hog(dst, orientations=9, pixels_per_cell=(4, 4), cells_per_block=(4, 4), visualize=True)
             roi = hog_image.flatten()
-
             roi = roi.reshape(1, -1)
 
             for name, model_ in models_dict.items():
@@ -84,8 +73,6 @@ def svcHog(path_):
             print("1")
             print("!!!!!!!!!!!!IMAGE " + path_ + " HASN'T BEEN SAVED!!!!!!!!!!!!")
 
-
-
         target_value = 1
         k = list(results.keys())
         v = np.array(list(results.values()))
@@ -95,13 +82,11 @@ def svcHog(path_):
 
         scale = 0.5
         fontScale = min(endX - startX, endY - startY) / (25 / scale)
-        # print(fontScale)
         cv2.putText(pil_image, answer, (startX, startY), cv2.FONT_HERSHEY_SIMPLEX, int(fontScale), (255, 255, 0), int(2), cv2.LINE_AA)
         return pil_image
 
     except Exception as e:
         print("2")
         print("!!!!!!!!!!!!IMAGE " + path_ + " HASN'T BEEN SAVED!!!!!!!!!!!!")
-
         return pil_image
 

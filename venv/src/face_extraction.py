@@ -1,17 +1,14 @@
 import os
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
-import matplotlib.pyplot as plt
 import numpy as np
 import cv2 #opencv
 from PIL import Image
 import pickle
-from face_extractor import Extractor
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 image_dir = os.path.join(BASE_DIR, "samples\\train")
 new_image_dir = os.path.join(BASE_DIR, "samples\\updated_images")
 roi_image_dir = os.path.join(BASE_DIR, "samples\\faces")
-# print(BASE_DIR)
 pickles_dir = os.path.join(BASE_DIR, "pickles")
 
 data = []
@@ -40,14 +37,14 @@ for root, dirs, files in os.walk(image_dir):
 
             id_ = label_id[label]
             pil_image = cv2.imread(path)
-            # image = cv2.cvtColor(pil_image, cv2.COLOR_BGR2GRAY)
+
             try:
                 (h, w) = pil_image.shape[:2]
                 blob = cv2.dnn.blobFromImage(cv2.resize(pil_image, (304, 304)), 1.0, (304, 304), (104.0, 177.0, 123.0))
 
                 model.setInput(blob)
                 detections = model.forward()
-                # print("starting image " + filename)
+
                 for i in range(0, detections.shape[2]):
                     box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
                     (startX, startY, endX, endY) = box.astype("int")
@@ -59,8 +56,6 @@ for root, dirs, files in os.walk(image_dir):
                         break
                 try:
                     min_key = min(boxes, key=float)
-                    # print(boxes)
-                    # print("min key is: ",min_key)
                     chosen_box = boxes[min_key]
                     (startX, startY, endX, endY) = chosen_box.astype("int")
                     frame = pil_image[startY:endY, startX:endX]
@@ -75,9 +70,6 @@ for root, dirs, files in os.walk(image_dir):
                     data.append([pic, label])
                 except Exception as e:
                     print("!!!!!!!!!!!!IMAGE " + filename + " HASN'T BEEN SAVED!!!!!!!!!!!!")
-                #
-                # print("Image " + filename + " converted successfully")
-                # print("Image " + filename + " ROI successfully")
 
             except Exception as e:
                 pass
@@ -86,5 +78,4 @@ for root, dirs, files in os.walk(image_dir):
 path_name = os.path.join(pickles_dir, 'pics.pickle')
 with open(path_name, 'wb') as f:
     pickle.dump(data, f)
-# with open('pics.pickle', 'wb') as f:
-#     pickle.dump(data, f)
+
