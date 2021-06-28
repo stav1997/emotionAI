@@ -5,8 +5,6 @@ import cv2 #opencv
 from PIL import Image
 import pickle
 from skimage.feature import hog
-from pandas import DataFrame
-
 
 models_dict = {'angry': 'angry_OCS_hog_model.sav', 'disgust': 'disgust_OCS_hog_model.sav', 'happy': 'happy_OCS_hog_model.sav', 'natural': 'natural_OCS_hog_model.sav', 'sad': 'sad_OCS_hog_model.sav', 'shock': 'shock_OCS_hog_model.sav'}
 
@@ -21,14 +19,15 @@ data = []
 names = []
 results = {}
 boxes = {}
+data_info = {}
 
 def ocsHog(path_):
 
     pil_image = cv2.imread(path_)
 
     try:
-        (h, w) = pil_image.shape[:2]
 
+        (h, w) = pil_image.shape[:2]
         blob = cv2.dnn.blobFromImage(cv2.resize(pil_image, (304, 304)), 1.0, (304, 304), (104.0, 177.0, 123.0))
 
         model.setInput(blob)
@@ -66,14 +65,7 @@ def ocsHog(path_):
                 pickle_in = open(path_name, 'rb')
                 model1 = pickle.load(pickle_in)
                 pickle_in.close()
-
                 res =model1.decision_function(roi)
-
-                scores = model1.score_samples(roi)
-                df = DataFrame(scores)
-                threshold = df.quantile(q=0.6)
-                thresh = threshold.values[0]
-                resl = thresh-res[0]
                 print(">%s --> %0.4f" % (name, res[0]))
                 results[name] = res[0]
 
@@ -82,13 +74,7 @@ def ocsHog(path_):
             print("!!!!!!!!!!!!IMAGE " + path_ + " HASN'T BEEN SAVED!!!!!!!!!!!!")
 
 
-
-        target_value = 1
-        k = list(results.keys())
-        v = np.array(list(results.values()))
-        dist = abs(v - target_value)
-        arg = np.argmin(dist)
-        answer = k[arg]
+        answer = max(results, key=results.get)
         scale = 0.5
         fontScale = min(endX-startX, endY-startY) / (25 / scale)
 
@@ -101,4 +87,3 @@ def ocsHog(path_):
         print("!!!!!!!!!!!!IMAGE " + path_ + " HASN'T BEEN SAVED!!!!!!!!!!!!")
 
         return pil_image
-

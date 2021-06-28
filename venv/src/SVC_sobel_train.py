@@ -1,12 +1,25 @@
 import os
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+import matplotlib.pyplot as plt
 import numpy as np
+import cv2  # opencv
+from PIL import Image
 import pickle
+import time
 import random
+from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC  # support vector classifier
+from sklearn.calibration import CalibratedClassifierCV
+from sklearn.svm import OneClassSVM
+from skimage.feature import hog
 from sklearn import metrics
 from sklearn.model_selection import cross_val_score
+from pandas import DataFrame
+from pca import pca
+from sklearn.feature_selection import SelectFromModel
+from skimage.feature import canny
+from sklearn.ensemble import StackingClassifier
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 pickles_dir = os.path.join(BASE_DIR, "pickles")
@@ -22,11 +35,13 @@ features = []
 labels = []
 filenames = []
 dir_dict = {'angry': 0, 'disgust': 1, 'happy': 2, 'natural': 3, 'sad': 4, 'shock': 5}
+models_dict = {'angry': 0, 'disgust': 1, 'happy': 2, 'natural': 3, 'sad': 4, 'shock': 5}
 
 data_path = os.path.join(pickles_dir, 'pic_sobel_data_.pickle')
 pickle_in = open(data_path, 'rb')
 data = pickle.load(pickle_in)
 pickle_in.close()
+
 
 
 for key, value in dir_dict.items():
@@ -45,8 +60,8 @@ for key, value in dir_dict.items():
         else:
             false_data.append([feature, -1])
 
-    print(len(true_data))
-    data_ = true_data + false_data[:70]
+    n = len(true_data) - 80
+    data_ = true_data + false_data[:n]
     random.shuffle(data_)
     for feature, label in data_:
         features.append(feature)
@@ -59,14 +74,10 @@ for name, model, features_, labels_ in models:
     print("starting %s model training" % name)
 
     scores = cross_val_score(model, features_, labels_, scoring='accuracy', cv=10, n_jobs=-1, error_score='raise')
-    results.append([name,scores])
+    results.append([name, scores])
     print('CV results: %s %.3f (%.3f)' % (name, np.mean(scores), np.std(scores)))
 
-    train_data, test_data, train_target, test_target = train_test_split(features_, labels_, train_size=0.2)
-    model.fit(train_data, train_target)
-    pred = model.predict(test_data)
-    score = metrics.balanced_accuracy_score(test_target, pred)
-    print('FIT results: %s %.3f' % (name, score))
+    model.fit(features_, labels_)
 
     path_name = os.path.join(models_dir, name+'_SVC_sobel_model.sav')
     with open(path_name, 'wb') as f:

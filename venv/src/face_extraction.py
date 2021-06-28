@@ -10,8 +10,9 @@ image_dir = os.path.join(BASE_DIR, "samples\\train")
 new_image_dir = os.path.join(BASE_DIR, "samples\\updated_images")
 roi_image_dir = os.path.join(BASE_DIR, "samples\\faces")
 pickles_dir = os.path.join(BASE_DIR, "pickles")
+# image_dir = "C:\\Users\\stav\\Desktop\\insta\\stav\\pics"
+# roi_image_dir = "C:\\Users\\stav\\Desktop\\insta\\stav\\faces"
 
-data = []
 current_id = 0
 file_id = 0
 label_id = {}
@@ -37,14 +38,12 @@ for root, dirs, files in os.walk(image_dir):
 
             id_ = label_id[label]
             pil_image = cv2.imread(path)
-
             try:
                 (h, w) = pil_image.shape[:2]
                 blob = cv2.dnn.blobFromImage(cv2.resize(pil_image, (304, 304)), 1.0, (304, 304), (104.0, 177.0, 123.0))
 
                 model.setInput(blob)
                 detections = model.forward()
-
                 for i in range(0, detections.shape[2]):
                     box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
                     (startX, startY, endX, endY) = box.astype("int")
@@ -61,8 +60,8 @@ for root, dirs, files in os.walk(image_dir):
                     frame = pil_image[startY:endY, startX:endX]
                     roi = cv2.resize(frame, (304, 304))
                     cv2.imwrite(roi_image_dir + '\\' + label + '\\' + filename, roi)
-                    cv2.rectangle(pil_image, (startX, startY), (endX, endY), (255, 255, 255), 2)
-                    cv2.imwrite(new_image_dir + '\\' + label + '\\' + filename, pil_image)
+                    # cv2.rectangle(pil_image, (startX, startY), (endX, endY), (255, 255, 255), 2)
+                    # cv2.imwrite(new_image_dir + '\\' + label + '\\' + filename, pil_image)
                     img = Image.open(path).convert("L")
                     image_array = np.array(img, "uint8")
                     pic_ = image_array[startY:endY, startX:endX]
@@ -74,8 +73,6 @@ for root, dirs, files in os.walk(image_dir):
             except Exception as e:
                 pass
 
-
 path_name = os.path.join(pickles_dir, 'pics.pickle')
 with open(path_name, 'wb') as f:
     pickle.dump(data, f)
-

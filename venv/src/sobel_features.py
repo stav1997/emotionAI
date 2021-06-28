@@ -5,13 +5,13 @@ import pickle
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 pickles_dir = os.path.join(BASE_DIR, "pickles")
+data = []
 
 pics_data = os.path.join(pickles_dir, 'pics.pickle')
-
 pickle_info = open(pics_data, 'rb')
 key_data = pickle.load(pickle_info)
 pickle_info.close()
-data = []
+
 for roi, label in key_data:
     dst = cv2.GaussianBlur(roi, (5, 5), cv2.BORDER_DEFAULT)
 
@@ -23,7 +23,7 @@ for roi, label in key_data:
 
     roi = grad.flatten()
     data.append([roi, label])
-data_path = os.path.join(pickles_dir, 'pic_sobel_data_.pickle')
 
+data_path = os.path.join(pickles_dir, 'pic_sobel_data_.pickle')
 with open(data_path, 'wb') as f:
     pickle.dump(data, f)

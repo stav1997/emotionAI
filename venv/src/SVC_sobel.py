@@ -23,7 +23,6 @@ def svcSobel(path_):
     print('SVC sobel results using decision_function:')
 
     pil_image = cv2.imread(path_)
-    # pil_image = plt.imread(path_)
 
     try:
         (h, w) = pil_image.shape[:2]
@@ -76,20 +75,14 @@ def svcSobel(path_):
         except Exception as e:
             print("1")
             print("!!!!!!!!!!!!IMAGE " + path_ + " HASN'T BEEN SAVED!!!!!!!!!!!!")
-        target_value = 1
-        k = list(results.keys())
-        v = np.array(list(results.values()))
-        dist = abs(v - target_value)
-        arg = np.argmin(dist)
-        answer = k[arg]
 
+        answer = max(results, key=results.get)
         scale = 0.5
         fontScale = min(endX - startX, endY - startY) / (25 / scale)
         cv2.putText(pil_image, answer, (startX, startY), cv2.FONT_HERSHEY_SIMPLEX, int(fontScale), (255, 255, 0), int(2), cv2.LINE_AA)
-
         return pil_image
+
     except Exception as e:
         print("2")
         print("!!!!!!!!!!!!IMAGE " + path_ + " HASN'T BEEN SAVED!!!!!!!!!!!!")
         return pil_image
-

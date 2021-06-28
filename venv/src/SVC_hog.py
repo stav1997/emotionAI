@@ -23,7 +23,6 @@ boxes = {}
 def svcHog(path_):
 
     pil_image = cv2.imread(path_)
-    # pil_image = plt.imread(path_)
 
     try:
 
@@ -58,6 +57,7 @@ def svcHog(path_):
             dst = cv2.GaussianBlur(pic, (5, 5), cv2.BORDER_DEFAULT)
             fd, hog_image = hog(dst, orientations=9, pixels_per_cell=(4, 4), cells_per_block=(4, 4), visualize=True)
             roi = hog_image.flatten()
+
             roi = roi.reshape(1, -1)
 
             for name, model_ in models_dict.items():
@@ -73,13 +73,7 @@ def svcHog(path_):
             print("1")
             print("!!!!!!!!!!!!IMAGE " + path_ + " HASN'T BEEN SAVED!!!!!!!!!!!!")
 
-        target_value = 1
-        k = list(results.keys())
-        v = np.array(list(results.values()))
-        dist = abs(v - target_value)
-        arg = np.argmin(dist)
-        answer = k[arg]
-
+        answer = max(results, key=results.get)
         scale = 0.5
         fontScale = min(endX - startX, endY - startY) / (25 / scale)
         cv2.putText(pil_image, answer, (startX, startY), cv2.FONT_HERSHEY_SIMPLEX, int(fontScale), (255, 255, 0), int(2), cv2.LINE_AA)
@@ -88,5 +82,5 @@ def svcHog(path_):
     except Exception as e:
         print("2")
         print("!!!!!!!!!!!!IMAGE " + path_ + " HASN'T BEEN SAVED!!!!!!!!!!!!")
-        return pil_image
 
+        return pil_image

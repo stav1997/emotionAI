@@ -22,11 +22,10 @@ boxes = {}
 def ocsSobel(path_):
     print('OCS sobel results using decision_function:')
     pil_image = cv2.imread(path_)
-    # pil_image = plt.imread(path_)
 
     try:
-        (h, w) = pil_image.shape[:2]
 
+        (h, w) = pil_image.shape[:2]
         blob = cv2.dnn.blobFromImage(cv2.resize(pil_image, (304, 304)), 1.0, (304, 304), (104.0, 177.0, 123.0))
 
         model.setInput(blob)
@@ -43,6 +42,7 @@ def ocsSobel(path_):
             else:
                 break
         try:
+
             min_key = min(boxes, key=float)
             chosen_box = boxes[min_key]
             (startX, startY, endX, endY) = chosen_box.astype("int")
@@ -77,19 +77,10 @@ def ocsSobel(path_):
             print("1")
             print("!!!!!!!!!!!!IMAGE " + path_ + " HASN'T BEEN SAVED!!!!!!!!!!!!")
 
-
-        target_value = 1
-        k = list(results.keys())
-        v = np.array(list(results.values()))
-        dist = abs(v - target_value)
-        arg = np.argmin(dist)
-        answer = k[arg]
+        answer = max(results, key=results.get)
         scale = 0.5
         fontScale = min(endX-startX, endY-startY) / (25 / scale)
-
         cv2.putText(pil_image, answer, (startX, startY-int(fontScale)), cv2.FONT_HERSHEY_SIMPLEX, int(fontScale), (255, 255, 0), int(2), cv2.LINE_AA)
-
-
         return pil_image
 
     except Exception as e:
@@ -97,14 +88,3 @@ def ocsSobel(path_):
         print("!!!!!!!!!!!!IMAGE " + path_ + " HASN'T BEEN SAVED!!!!!!!!!!!!")
         return pil_image
 
-
-def get_optimal_font_scale(text, width):
-    for scale in reversed(range(0, 60, 1)):
-        textSize = cv2.getTextSize(text, fontFace=cv.cv2.FONT_HERSHEY_SIMPLEX, fontScale=scale/10, thickness=1)
-        print('here')
-
-        new_width = textSize[0][0]
-        print(new_width)
-        if (new_width <= width):
-            return scale/10
-    return 1
