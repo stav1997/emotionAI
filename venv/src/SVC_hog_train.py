@@ -1,24 +1,10 @@
 import os
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
-import matplotlib.pyplot as plt
 import numpy as np
-import cv2  # opencv
-from PIL import Image
 import pickle
-import time
 import random
-from sklearn.model_selection import GridSearchCV
-from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC  # support vector classifier
-from sklearn.svm import OneClassSVM
-from skimage.feature import hog
-from sklearn import metrics
 from sklearn.model_selection import cross_val_score
-from pandas import DataFrame
-from pca import pca
-from sklearn.feature_selection import SelectFromModel
-from skimage.feature import canny
-from sklearn.ensemble import StackingClassifier
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 pickles_dir = os.path.join(BASE_DIR, "pickles")

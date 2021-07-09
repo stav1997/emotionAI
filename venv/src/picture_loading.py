@@ -19,7 +19,9 @@ for root, dirs, files in os.walk(image_dir):
         if filename.endswith("png") or filename.endswith("jpg") or filename.endswith("JPG") or filename.endswith("webp"):
             path = os.path.join(root, filename)
 
-            new_path = os.path.join(root,'a_'+str(file_id) + '_.jpg')
+            # new_path = os.path.join(root, filename+ '.jpg')
+            new_path = os.path.join(root, filename)
+
             os.rename(path, new_path)
             file_id = file_id + 1
 

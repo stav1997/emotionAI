@@ -12,6 +12,7 @@ from sklearn.svm import OneClassSVM
 from skimage.feature import hog
 from sklearn import metrics
 from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import GridSearchCV
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 pickles_dir = os.path.join(BASE_DIR, "pickles")
@@ -56,10 +57,9 @@ for key, value in dir_dict.items():
     for feature, label in data_:
         features.append(feature)
         labels.append(label)
+    # model_name = OneClassSVM(kernel='linear', gamma=0.005, nu=0.08, tol=0.001)
 
-    # model_name = OneClassSVM(kernel='linear', gamma='scale', nu=0.13)
     model_name = OneClassSVM(kernel='linear', gamma=0.0005, nu=0.1)
-
     models.append([key, model_name, features, labels])
 
 for name, model, features_, labels_ in models:
@@ -75,6 +75,16 @@ for name, model, features_, labels_ in models:
     with open(path_name, 'wb') as f:
         pickle.dump(model, f)
 
-path_ = os.path.join(pickles_dir, 'OCS_hog_scores.pickle')
-with open(path_, 'wb') as f:
-    pickle.dump(results, f)
+#
+# path_ = os.path.join(pickles_dir, 'OCS_hog_scores.pickle')
+# with open(path_, 'wb') as f:
+#     pickle.dump(results, f)
+
+
+    #
+    # param_grid = [{'kernel': ['linear', 'rbf'], 'gamma': [0.005, 0.0005], 'nu': [0.1, 0.08, 0.15], 'tol':[0.001, 0.0005]}]
+    # # model_name = OneClassSVM(kernel='linear', gamma=0.0005, nu=0.1)
+    # model_name = OneClassSVM()
+    # clf = GridSearchCV(model_name, param_grid, scoring='accuracy')
+    # clf.fit(features, labels)
+    # print(clf.best_params_)
