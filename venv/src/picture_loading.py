@@ -1,12 +1,6 @@
 import os
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
-import matplotlib.pyplot as plt
-import numpy as np
-import cv2  # opencv
-from PIL import Image
-import pickle
 
-# BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 image_dir = "C:\\Users\\stav\\Desktop\\insta\\stav\\pics\\angry"
 # image_dir = "C:\\Users\\stav\\Desktop\\yesterday\\venv\\src\\samples\\train"
 

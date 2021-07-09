@@ -1,6 +1,6 @@
 import os
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
-import cv2  # opencv
+import cv2
 import pickle
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))

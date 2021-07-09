@@ -2,57 +2,28 @@ import os
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 import numpy as np
 import pickle
-import random
 from sklearn.svm import OneClassSVM
 from sklearn.model_selection import cross_val_score
+from Functions import dataSplit
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 pickles_dir = os.path.join(BASE_DIR, "pickles")
 models_dir = os.path.join(BASE_DIR, "models")
-roi_image_dir = os.path.join(BASE_DIR, "samples\\faces")
+data_path = os.path.join(pickles_dir, 'pic_sobel_data_.pickle')
 
 models = []
 results = []
-names = []
 data = []
 features = []
 labels = []
-filenames = []
 dir_dict = {'angry': 0, 'disgust': 1, 'happy': 2, 'natural': 3, 'sad': 4, 'shock': 5}
-models_dict = {'angry': 0, 'disgust': 1, 'happy': 2, 'natural': 3, 'sad': 4, 'shock': 5}
-
-data_path = os.path.join(pickles_dir, 'pic_sobel_data_.pickle')
-pickle_in = open(data_path, 'rb')
-data = pickle.load(pickle_in)
-pickle_in.close()
-
 
 for key, value in dir_dict.items():
-    features = []
-    labels = []
-    true_data = []
-    true_labels = []
-    false_data = []
-    false_labels = []
+    data = dataSplit('ocs', key, data_path)
+    features = data[0]
+    labels = data[1]
 
-    random.shuffle(data)
-
-    for feature, label in data:
-        if label == key:
-            true_data.append([feature, 1])
-        else:
-            false_data.append([feature, -1])
-
-    data_ = true_data
-
-    random.shuffle(data_)
-    for feature_, label_ in data_:
-        features.append(feature_)
-        labels.append(label_)
-
-    # model_name = OneClassSVM(kernel='linear', gamma='scale', nu=0.13)
     model_name = OneClassSVM(kernel='linear', gamma=0.0005, nu=0.1)
-    #
     models.append([key, model_name, features, labels])
 
 for name, model, features_, labels_ in models:

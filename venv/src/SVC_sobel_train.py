@@ -1,71 +1,27 @@
 import os
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
-import matplotlib.pyplot as plt
 import numpy as np
-import cv2  # opencv
-from PIL import Image
 import pickle
-import time
-import random
-from sklearn.model_selection import GridSearchCV
-from sklearn.model_selection import train_test_split
-from sklearn.svm import SVC  # support vector classifier
-from sklearn.calibration import CalibratedClassifierCV
-from sklearn.svm import OneClassSVM
-from skimage.feature import hog
-from sklearn import metrics
+from sklearn.svm import SVC
 from sklearn.model_selection import cross_val_score
-from pandas import DataFrame
-from pca import pca
-from sklearn.feature_selection import SelectFromModel
-from skimage.feature import canny
-from sklearn.ensemble import StackingClassifier
+from Functions import dataSplit
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 pickles_dir = os.path.join(BASE_DIR, "pickles")
 models_dir = os.path.join(BASE_DIR, "models")
+data_path = os.path.join(pickles_dir, 'pic_sobel_data_.pickle')
 
 models = []
 results = []
-names = []
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-roi_image_dir = os.path.join(BASE_DIR, "samples\\faces")
 data = []
 features = []
 labels = []
-filenames = []
 dir_dict = {'angry': 0, 'disgust': 1, 'happy': 2, 'natural': 3, 'sad': 4, 'shock': 5}
-models_dict = {'angry': 0, 'disgust': 1, 'happy': 2, 'natural': 3, 'sad': 4, 'shock': 5}
-
-data_path = os.path.join(pickles_dir, 'pic_sobel_data_.pickle')
-pickle_in = open(data_path, 'rb')
-data = pickle.load(pickle_in)
-pickle_in.close()
-
-
 
 for key, value in dir_dict.items():
-    features = []
-    labels = []
-    true_data = []
-    true_labels = []
-    false_data = []
-    false_labels = []
-
-    random.shuffle(data)
-
-    for feature, label in data:
-        if label == key:
-            true_data.append([feature, 1])
-        else:
-            false_data.append([feature, -1])
-
-    n = len(true_data) - 80
-    data_ = true_data + false_data[:n]
-    random.shuffle(data_)
-    for feature, label in data_:
-        features.append(feature)
-        labels.append(label)
+    data = dataSplit('svc', key, data_path)
+    features = data[0]
+    labels = data[1]
 
     model_name = SVC(C=10, kernel='linear', degree=4, gamma='scale', class_weight='balanced', probability=True)
     models.append([key, model_name, features, labels])

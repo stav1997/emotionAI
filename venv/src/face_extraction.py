@@ -60,8 +60,6 @@ for root, dirs, files in os.walk(image_dir):
                     frame = pil_image[startY:endY, startX:endX]
                     roi = cv2.resize(frame, (304, 304))
                     cv2.imwrite(roi_image_dir + '\\' + label + '\\' + filename, roi)
-                    # cv2.rectangle(pil_image, (startX, startY), (endX, endY), (255, 255, 255), 2)
-                    # cv2.imwrite(new_image_dir + '\\' + label + '\\' + filename, pil_image)
                     img = Image.open(path).convert("L")
                     image_array = np.array(img, "uint8")
                     pic_ = image_array[startY:endY, startX:endX]
