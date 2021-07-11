@@ -18,7 +18,6 @@ pickle_info.close()
 for roi, label in key_data:
     dst = cv2.GaussianBlur(roi, (5, 5), cv2.BORDER_DEFAULT)
     fd, hog_image = hog(dst, orientations=9, pixels_per_cell=(4, 4), cells_per_block=(4, 4), visualize=True)
-    plt.imshow()
     roi = hog_image.flatten()
     data.append([roi, label])
 
