@@ -71,6 +71,6 @@ for root, dirs, files in os.walk(image_dir):
             except Exception as e:
                 pass
 
-path_name = os.path.join(pickles_dir, 'pics.pickle')
+path_name = os.path.join(pickles_dir, 'pics_.pickle')
 with open(path_name, 'wb') as f:
     pickle.dump(data, f)
